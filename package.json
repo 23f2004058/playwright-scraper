@@ -1,0 +1,11 @@
+{
+  "name": "playwright-scraper",
+  "version": "1.0.0",
+  "description": "Scrape and sum table values using Playwright",
+  "scripts": {
+    "scrape": "node scrape.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
