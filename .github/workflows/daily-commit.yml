@@ -14,16 +14,28 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
       - name: 23f2004058@ds.study.iitm.ac.in - Create daily commit
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          echo "Daily update: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> daily-log.txt
-          git add daily-log.txt
-          git commit -m "Daily automated commit - $(date -u '+%Y-%m-%d %H:%M:%S')"
-          git push origin HEAD
+          
+          # Write to file
+          DATE=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          echo "Daily update: $DATE" >> daily-log.txt
+          
+          # Stage and commit
+          git add -A
+          git status
+          git commit -m "Daily automated commit - $DATE"
+          
+          # Push using HTTPS with token
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git push origin main
+          
+          echo "Push successful!"
