@@ -1,25 +1,28 @@
-const { chromium } = require('playwright');
+name: Playwright Scraper
 
-(async () => {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-  let total = 0;
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
 
-  for (let seed = 24; seed <= 33; seed++) {
-    const url = `https://sanand0.github.io/tdsdata/js_table/?seed=${seed}`;
-    await page.goto(url, { waitUntil: 'networkidle' });
-    await page.waitForSelector('table', { timeout: 15000 });
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    const numbers = await page.$$eval('table td', cells =>
-      cells.map(cell => parseFloat(cell.innerText.trim())).filter(n => !isNaN(n))
-    );
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    const seedSum = numbers.reduce((a, b) => a + b, 0);
-    console.log(`Seed ${seed}: ${seedSum}`);
-    total += seedSum;
-  }
+      - name: Install dependencies
+        run: npm install
 
-  console.log(`Total: ${total}`);
-  await browser.close();
-})();
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: 23f2004058@ds.study.iitm.ac.in - Scrape tables and compute total sum
+        run: node scrape.js
