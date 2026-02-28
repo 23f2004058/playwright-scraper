@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
 
   for (let seed = 24; seed <= 33; seed++) {
     const url = `https://sanand0.github.io/tdsdata/js_table/?seed=${seed}`;
-    await page.goto(url);
+    await page.goto(url, { waitUntil: 'networkidle' });
     await page.waitForSelector('table', { timeout: 15000 });
 
     const numbers = await page.$$eval('table td', cells =>
@@ -20,6 +20,6 @@ const { chromium } = require('playwright');
     total += seedSum;
   }
 
-  console.log(`Total sum: ${total}`);
+  console.log(`Total: ${total}`);
   await browser.close();
 })();
